@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+ <arg name="x/2" default="0.5"/>
+ <arg name="x" default="1.0"/>
+ <arg name="2x" default="2.0"/>
+ <arg name="3x" default="3.0"/>
+ <arg name="4x" default="4.0"/>
+ <arg name="6x" default="6.0"/>
+ <arg name="8x" default="8.0"/>
+ <arg name="9x" default="9.0"/>
+ <arg name="10x" default="10.0"/>
+ <arg name="14x" default="14.0"/>
+ <arg name="15x" default="15.0"/>
+
+<multimarker markers="15">
+    <marker index="17" status="1">
+        <corner x="-$(arg x/2)" y="-$(arg x/2)" z="0" />
+        <corner x="$(arg x/2)"  y="-$(arg x/2)" z="0" />
+        <corner x="$(arg x/2)"  y="$(arg x/2)" z="0" />
+        <corner x="-$(arg x/2)" y="$(arg x/2)" z="0" />
+    </marker>
+
+    <marker index="8" status="1">
+        <corner x="-$(arg 3x)" y="$(arg x)" z="0" />
+        <corner x="-$(arg x)"  y="$(arg x)" z="0" />
+        <corner x="-$(arg x)"  y="$(arg 3x)" z="0" />
+        <corner x="-$(arg 3x)" y="$(arg 3x)" z="0" />
+    </marker>
+    <marker index="9" status="1">
+        <corner x="$(arg x)"   y="$(arg x)" z="0" />
+        <corner x="$(arg 3x)"  y="$(arg x)" z="0" />
+        <corner x="$(arg 3x)"  y="$(arg 3x)" z="0" />
+        <corner x="$(arg x)"   y="$(arg 3x)" z="0" />
+    </marker>
+    <marker index="10" status="1">
+        <corner x="$(arg x)"   y="-$(arg 3x)" z="0" />
+        <corner x="$(arg 3x)"  y="-$(arg 3x)" z="0" />
+        <corner x="$(arg 3x)"  y="-$(arg x)" z="0" />
+        <corner x="$(arg x)"   y="-$(arg x)" z="0" />
+    </marker>
+    <marker index="11" status="1">
+        <corner x="-$(arg 3x)" y="-$(arg 3x)" z="0" />
+        <corner x="-$(arg x)"  y="-$(arg 3x)" z="0" />
+        <corner x="-$(arg x)"  y="-$(arg x)" z="0" />
+        <corner x="-$(arg 3x)" y="-$(arg x)" z="0" />
+    </marker>
+
+       <marker index="6" status="1">
+       <corner x="-$(arg x/2)" y="$(arg x)" z="0" />
+        <corner x="$(arg x/2)"  y="$(arg x)" z="0" />
+        <corner x="$(arg x/2)"  y="$(arg 2x)" z="0" />
+        <corner x="-$(arg x/2)" y="$(arg 2x)" z="0" />
+    </marker>
+    <marker index="5" status="1">
+        <corner x="$(arg x)" y="-$(arg x/2)" z="0" />
+        <corner x="$(arg 2x)"  y="-$(arg x/2)" z="0" />
+        <corner x="$(arg 2x)"  y="$(arg x/2)" z="0" />
+        <corner x="$(arg x)" y="$(arg x/2)" z="0" />
+    </marker>
+    <marker index="4" status="1">
+        <corner x="-$(arg x/2)" y="-$(arg 2x)" z="0" />
+        <corner x="$(arg x/2)"  y="-$(arg 2x)" z="0" />
+        <corner x="$(arg x/2)"  y="-$(arg x)" z="0" />
+        <corner x="-$(arg x/2)" y="-$(arg x)" z="0" />
+    </marker>
+    <marker index="3" status="1">
+        <corner x="-$(arg 2x)" y="-$(arg x/2)" z="0" />
+        <corner x="-$(arg x)"  y="-$(arg x/2)" z="0" />
+        <corner x="-$(arg x)"  y="$(arg x/2)" z="0" />
+        <corner x="-$(arg 2x)" y="$(arg x/2)" z="0" />
+    </marker>
+
+    <marker index="12" status="1">
+        <corner x="$(arg 3x)" y="$(arg 8x)" z="0" />
+        <corner x="$(arg 9x)"  y="$(arg 8x)" z="0" />
+        <corner x="$(arg 9x)"  y="$(arg 14x)" z="0" />
+        <corner x="$(arg 3x)" y="$(arg 14x)" z="0" />
+    </marker>
+    <marker index="13" status="1">
+        <corner x="$(arg 4x)"  y="-$(arg 3x)" z="0" />
+        <corner x="$(arg 10x)" y="-$(arg 3x)" z="0" />
+        <corner x="$(arg 10x)" y="$(arg 3x)" z="0" />
+        <corner x="$(arg 4x)"  y="$(arg 3x)" z="0" />
+    </marker>
+    <marker index="14" status="1">
+        <corner x="-$(arg 9x)"  y="-$(arg 14x)" z="0" />
+        <corner x="-$(arg 3x)"  y="-$(arg 14x)" z="0" />
+        <corner x="-$(arg 3x)"  y="-$(arg 8x)" z="0" />
+        <corner x="-$(arg 9x)"  y="-$(arg 8x)" z="0" />
+    </marker>
+    <marker index="15" status="1">
+        <corner x="-$(arg 10x)"  y="-$(arg 3x)" z="0" />
+        <corner x="-$(arg 4x)"   y="-$(arg 3x)" z="0" />
+        <corner x="-$(arg 4x)"   y="$(arg 3x)" z="0" />
+        <corner x="-$(arg 10x)"  y="$(arg 3x)" z="0" />
+    </marker>
+
+    <marker index="16" status="1">
+        <corner x="-$(arg 10x)"  y="$(arg 6x)" z="0" />
+        <corner x="-$(arg x)"    y="$(arg 6x)" z="0" />
+        <corner x="-$(arg x)"    y="$(arg 15x)" z="0" />
+        <corner x="-$(arg 10x)"  y="$(arg 15x)" z="0" />
+    </marker>
+    <marker index="7" status="1">
+        <corner x="$(arg x)"     y="-$(arg 15x)" z="0" />
+        <corner x="$(arg 10x)"   y="-$(arg 15x)" z="0" />
+        <corner x="$(arg 10x)"   y="-$(arg 6x)" z="0" />
+        <corner x="$(arg x)"     y="-$(arg 6x)" z="0" />
+    </marker>
+
+
+</multimarker>

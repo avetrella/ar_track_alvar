@@ -46,6 +46,7 @@
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/image_encodings.h>
+#include <geometry_msgs/TransformStamped.h>
 
 using namespace alvar;
 using namespace std;
@@ -59,6 +60,7 @@ cv_bridge::CvImagePtr cv_ptr_;
 image_transport::Subscriber cam_sub_;
 ros::Publisher arMarkerPub_;
 ros::Publisher rvizMarkerPub_;
+ros::Publisher poseCamMarkersPub_;
 ar_track_alvar_msgs::AlvarMarkers arPoseMarkers_;
 tf::TransformListener *tf_listener;
 tf::TransformBroadcaster *tf_broadcaster;
@@ -92,8 +94,8 @@ void GetMultiMarkerPoses(IplImage *image) {
     
     if(marker_detector.DetectAdditional(image, cam, false) > 0){
       for(int i=0; i<n_bundles; i++){
-	if ((multi_marker_bundles[i]->SetTrackMarkers(marker_detector, cam, bundlePoses[i], image) > 0))
-	  multi_marker_bundles[i]->Update(marker_detector.markers, cam, bundlePoses[i]);
+      	if ((multi_marker_bundles[i]->SetTrackMarkers(marker_detector, cam, bundlePoses[i], image) > 0))
+      	    multi_marker_bundles[i]->Update(marker_detector.markers, cam, bundlePoses[i]);
       }
     }
   }
@@ -130,6 +132,20 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
     markerFrame += id_string;
     tf::StampedTransform camToMarker (t, image_msg->header.stamp, image_msg->header.frame_id, markerFrame.c_str());
     tf_broadcaster->sendTransform(camToMarker);
+
+    tf::Transform tInv = t.inverse();
+    geometry_msgs::PoseStamped camToMarkerpose;
+    camToMarkerpose.header = image_msg->header;
+    camToMarkerpose.header.frame_id = markerFrame.c_str();
+    camToMarkerpose.pose.position.x    = tInv.getOrigin().x();
+    camToMarkerpose.pose.position.y    = tInv.getOrigin().y();
+    camToMarkerpose.pose.position.z    = tInv.getOrigin().z();
+    camToMarkerpose.pose.orientation.w = tInv.getRotation().w();
+    camToMarkerpose.pose.orientation.x = tInv.getRotation().x();
+    camToMarkerpose.pose.orientation.y = tInv.getRotation().y();
+    camToMarkerpose.pose.orientation.z = tInv.getRotation().z();
+    poseCamMarkersPub_.publish(camToMarkerpose);
+
   }
 
   //Create the rviz visualization message
@@ -198,11 +214,11 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
       //Get the transformation from the Camera to the output frame for this image capture
       tf::StampedTransform CamToOutput;
       try{
-	tf_listener->waitForTransform(output_frame, image_msg->header.frame_id, image_msg->header.stamp, ros::Duration(1.0));
-	tf_listener->lookupTransform(output_frame, image_msg->header.frame_id, image_msg->header.stamp, CamToOutput);
+      	tf_listener->waitForTransform(output_frame, image_msg->header.frame_id, image_msg->header.stamp, ros::Duration(1.0));
+      	tf_listener->lookupTransform(output_frame, image_msg->header.frame_id, image_msg->header.stamp, CamToOutput);
       }
       catch (tf::TransformException ex){
-	ROS_ERROR("%s",ex.what());
+	       ROS_ERROR("%s",ex.what());
       }
 
       visualization_msgs::Marker rvizMarker;
@@ -300,6 +316,29 @@ int main(int argc, char *argv[])
   n_bundles = argc - n_args_before_list;
 
   marker_detector.SetMarkerSize(marker_size);
+
+  //TODO this is only for my base!!! should be dynamic
+  marker_detector.SetMarkerSize(marker_size);
+  marker_detector.SetMarkerSizeForId(0,marker_size);
+
+  marker_detector.SetMarkerSizeForId(1,marker_size);
+  marker_detector.SetMarkerSizeForId(2,marker_size);
+  marker_detector.SetMarkerSizeForId(3,marker_size);
+  marker_detector.SetMarkerSizeForId(4,marker_size);
+
+  marker_detector.SetMarkerSizeForId(5,2*marker_size);
+  marker_detector.SetMarkerSizeForId(6,2*marker_size);
+  marker_detector.SetMarkerSizeForId(7,2*marker_size);
+  marker_detector.SetMarkerSizeForId(8,2*marker_size);
+
+  marker_detector.SetMarkerSizeForId(9,6*marker_size);
+  marker_detector.SetMarkerSizeForId(10,6*marker_size);
+  marker_detector.SetMarkerSizeForId(11,6*marker_size);
+  marker_detector.SetMarkerSizeForId(12,6*marker_size);
+
+  marker_detector.SetMarkerSizeForId(13,9*marker_size);
+  marker_detector.SetMarkerSizeForId(14,9*marker_size);
+
   multi_marker_bundles = new MultiMarkerBundle*[n_bundles];	
   bundlePoses = new Pose[n_bundles];
   master_id = new int[n_bundles]; 
@@ -329,6 +368,8 @@ int main(int argc, char *argv[])
   tf_broadcaster = new tf::TransformBroadcaster();
   arMarkerPub_ = n.advertise < ar_track_alvar_msgs::AlvarMarkers > ("ar_pose_marker", 0);
   rvizMarkerPub_ = n.advertise < visualization_msgs::Marker > ("visualization_marker", 0);
+  poseCamMarkersPub_ = n.advertise < geometry_msgs::PoseStamped > ("camera_pose", 0);
+
 	
   //Give tf a chance to catch up before the camera callback starts asking for transforms
   ros::Duration(1.0).sleep();
