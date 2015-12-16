@@ -108,6 +108,10 @@ add_dependencies(medianFilter ${GENCPP_DEPS})
 
 set(ALVAR_TARGETS ar_track_alvar findMarkerBundlesNoKinect createMarker ar_track_alvar)
 
+add_executable(individualMarkersNoKinect nodes/IndividualMarkersNoKinect.cpp)
+target_link_libraries(individualMarkersNoKinect ar_track_alvar ${catkin_LIBRARIES})
+add_dependencies(individualMarkersNoKinect ${PROJECT_NAME}_gencpp  ${GENCPP_DEPS})
+
 add_executable(findMarkerBundlesNoKinect nodes/FindMarkerBundlesNoKinect.cpp)
 target_link_libraries(findMarkerBundlesNoKinect ar_track_alvar ${catkin_LIBRARIES})
 add_dependencies(findMarkerBundlesNoKinect ${PROJECT_NAME}_gencpp ${GENCPP_DEPS})

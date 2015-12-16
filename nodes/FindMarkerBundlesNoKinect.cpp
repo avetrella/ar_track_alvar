@@ -133,17 +133,17 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
     tf::StampedTransform camToMarker (t, image_msg->header.stamp, image_msg->header.frame_id, markerFrame.c_str());
     tf_broadcaster->sendTransform(camToMarker);
 
-    tf::Transform tInv = t.inverse();
+    //tf::Transform tInv = t.inverse();
     geometry_msgs::PoseStamped camToMarkerpose;
     camToMarkerpose.header = image_msg->header;
-    camToMarkerpose.header.frame_id = markerFrame.c_str();
-    camToMarkerpose.pose.position.x    = tInv.getOrigin().x();
-    camToMarkerpose.pose.position.y    = tInv.getOrigin().y();
-    camToMarkerpose.pose.position.z    = tInv.getOrigin().z();
-    camToMarkerpose.pose.orientation.w = tInv.getRotation().w();
-    camToMarkerpose.pose.orientation.x = tInv.getRotation().x();
-    camToMarkerpose.pose.orientation.y = tInv.getRotation().y();
-    camToMarkerpose.pose.orientation.z = tInv.getRotation().z();
+    //camToMarkerpose.header.frame_id = markerFrame.c_str();
+    camToMarkerpose.pose.position.x    = t.getOrigin().x();
+    camToMarkerpose.pose.position.y    = t.getOrigin().y();
+    camToMarkerpose.pose.position.z    = t.getOrigin().z();
+    camToMarkerpose.pose.orientation.w = t.getRotation().w();
+    camToMarkerpose.pose.orientation.x = t.getRotation().x();
+    camToMarkerpose.pose.orientation.y = t.getRotation().y();
+    camToMarkerpose.pose.orientation.z = t.getRotation().z();
     poseCamMarkersPub_.publish(camToMarkerpose);
 
   }
@@ -236,50 +236,52 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
       // do this conversion here -jbinney
       IplImage ipl_image = cv_ptr_->image;
       GetMultiMarkerPoses(&ipl_image);
+
+      
 		
       //Draw the observed markers that are visible and note which bundles have at least 1 marker seen
       for(int i=0; i<n_bundles; i++)
-	bundles_seen[i] = false;
+	      bundles_seen[i] = false;
 
       for (size_t i=0; i<marker_detector.markers->size(); i++)
-	{
-	  int id = (*(marker_detector.markers))[i].GetId();
+    	{
+    	  int id = (*(marker_detector.markers))[i].GetId();
 
-	  // Draw if id is valid
-	  if(id >= 0){
+    	  // Draw if id is valid
+    	  if(id >= 0){
 
-	    //Mark the bundle that marker belongs to as "seen"
-	    for(int j=0; j<n_bundles; j++){
-	      for(int k=0; k<bundle_indices[j].size(); k++){
-		if(bundle_indices[j][k] == id){
-		  bundles_seen[j] = true;
-		  break;
-		}
+    	    //Mark the bundle that marker belongs to as "seen"
+    	    for(int j=0; j<n_bundles; j++){
+    	      for(int k=0; k<bundle_indices[j].size(); k++){
+          		if(bundle_indices[j][k] == id){
+          		  bundles_seen[j] = true;
+          		  break;
+    		      }
+	          }
+	        }
+
+    	    // Don't draw if it is a master tag...we do this later, a bit differently
+    	    bool should_draw = true;
+    	    for(int i=0; i<n_bundles; i++){
+    	      if(id == master_id[i]) should_draw = false;
+    	    }
+    	    if(should_draw){
+    	      Pose p = (*(marker_detector.markers))[i].pose;
+    	      makeMarkerMsgs(VISIBLE_MARKER, id, p, image_msg, CamToOutput, &rvizMarker, &ar_pose_marker);
+    	      rvizMarkerPub_.publish (rvizMarker);
+    	    }
 	      }
-	    }
-
-	    // Don't draw if it is a master tag...we do this later, a bit differently
-	    bool should_draw = true;
-	    for(int i=0; i<n_bundles; i++){
-	      if(id == master_id[i]) should_draw = false;
-	    }
-	    if(should_draw){
-	      Pose p = (*(marker_detector.markers))[i].pose;
-	      makeMarkerMsgs(VISIBLE_MARKER, id, p, image_msg, CamToOutput, &rvizMarker, &ar_pose_marker);
-	      rvizMarkerPub_.publish (rvizMarker);
-	    }
-	  }
-	}
+	   }
 			
       //Draw the main markers, whether they are visible or not -- but only if at least 1 marker from their bundle is currently seen
       for(int i=0; i<n_bundles; i++)
-	{
-	  if(bundles_seen[i] == true){
-	    makeMarkerMsgs(MAIN_MARKER, master_id[i], bundlePoses[i], image_msg, CamToOutput, &rvizMarker, &ar_pose_marker);
-	    rvizMarkerPub_.publish (rvizMarker);
-	    arPoseMarkers_.markers.push_back (ar_pose_marker);
-	  }
-	}
+    	{
+    	  if(bundles_seen[i] == true){
+    	    makeMarkerMsgs(MAIN_MARKER, master_id[i], bundlePoses[i], image_msg, CamToOutput, &rvizMarker, &ar_pose_marker);
+    	    rvizMarkerPub_.publish (rvizMarker);
+    	    arPoseMarkers_.markers.push_back (ar_pose_marker);
+    	  }
+    	}
 
       //Publish the marker messages
       arMarkerPub_.publish (arPoseMarkers_);

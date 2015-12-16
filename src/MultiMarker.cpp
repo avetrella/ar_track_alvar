@@ -302,13 +302,32 @@ double MultiMarker::_GetPose(MarkerIterator &begin, MarkerIterator &end, Camera*
 		if (marker_status[i] > 0) marker_status[i]=1;
 	}
 
+	int max_index = 0;
+	for (MarkerIterator &i = begin.reset(); i != end; ++i)
+	{
+		const Marker* marker = *i;
+		int id = marker->GetId();
+		int index = get_id_index(id);
+		if(index > max_index) 
+			max_index = index;
+	}
+		
 	// For every detected marker
 	for (MarkerIterator &i = begin.reset(); i != end; ++i)
 	{
 		const Marker* marker = *i;
 		int id = marker->GetId();
 		int index = get_id_index(id);
-		if (index < 0) continue;
+		if (index < 0) 
+			continue;
+
+		//discart transformation from little tags when i see the bigger one
+		if (max_index > 8)
+			if(index < 5)
+				continue;
+		if (max_index > 8 )
+			if(index < 9)
+				continue;
 
 		// But only if we have corresponding points in the pointcloud
 		if (marker_status[index] > 0) {
@@ -317,13 +336,15 @@ double MultiMarker::_GetPose(MarkerIterator &begin, MarkerIterator &end, Camera*
 				CvPoint3D64f Xnew = pointcloud[pointcloud_index(id, (int)j)];
 				world_points.push_back(Xnew);
 				image_points.push_back(marker->marker_corners_img.at(j));
-				if (image) cvCircle(image, cvPoint(int(marker->marker_corners_img[j].x), int(marker->marker_corners_img[j].y)), 3, CV_RGB(0,255,0));
+				if (image) 
+					cvCircle(image, cvPoint(int(marker->marker_corners_img[j].x), int(marker->marker_corners_img[j].y)), 3, CV_RGB(0,255,0));
 			}
 			marker_status[index] = 2; // Used for tracking
 		}
 	}
 
-	if (world_points.size() < 4) return -1;
+	if (world_points.size() < 4) 
+		return -1;
 
 	double rod[3], tra[3];
 	CvMat rot_mat = cvMat(3, 1,CV_64F, rod);

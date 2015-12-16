@@ -19,32 +19,7 @@
         <corner x="-$(arg x/2)" y="$(arg x/2)" z="0" />
     </marker>
 
-    <marker index="8" status="1">
-        <corner x="-$(arg 3x)" y="$(arg x)" z="0" />
-        <corner x="-$(arg x)"  y="$(arg x)" z="0" />
-        <corner x="-$(arg x)"  y="$(arg 3x)" z="0" />
-        <corner x="-$(arg 3x)" y="$(arg 3x)" z="0" />
-    </marker>
-    <marker index="9" status="1">
-        <corner x="$(arg x)"   y="$(arg x)" z="0" />
-        <corner x="$(arg 3x)"  y="$(arg x)" z="0" />
-        <corner x="$(arg 3x)"  y="$(arg 3x)" z="0" />
-        <corner x="$(arg x)"   y="$(arg 3x)" z="0" />
-    </marker>
-    <marker index="10" status="1">
-        <corner x="$(arg x)"   y="-$(arg 3x)" z="0" />
-        <corner x="$(arg 3x)"  y="-$(arg 3x)" z="0" />
-        <corner x="$(arg 3x)"  y="-$(arg x)" z="0" />
-        <corner x="$(arg x)"   y="-$(arg x)" z="0" />
-    </marker>
-    <marker index="11" status="1">
-        <corner x="-$(arg 3x)" y="-$(arg 3x)" z="0" />
-        <corner x="-$(arg x)"  y="-$(arg 3x)" z="0" />
-        <corner x="-$(arg x)"  y="-$(arg x)" z="0" />
-        <corner x="-$(arg 3x)" y="-$(arg x)" z="0" />
-    </marker>
-
-       <marker index="6" status="1">
+    <marker index="6" status="1">
        <corner x="-$(arg x/2)" y="$(arg x)" z="0" />
         <corner x="$(arg x/2)"  y="$(arg x)" z="0" />
         <corner x="$(arg x/2)"  y="$(arg 2x)" z="0" />
@@ -67,6 +42,31 @@
         <corner x="-$(arg x)"  y="-$(arg x/2)" z="0" />
         <corner x="-$(arg x)"  y="$(arg x/2)" z="0" />
         <corner x="-$(arg 2x)" y="$(arg x/2)" z="0" />
+    </marker>
+
+    <marker index="8" status="1">
+        <corner x="-$(arg 3x)" y="$(arg x)" z="0" />
+        <corner x="-$(arg x)"  y="$(arg x)" z="0" />
+        <corner x="-$(arg x)"  y="$(arg 3x)" z="0" />
+        <corner x="-$(arg 3x)" y="$(arg 3x)" z="0" />
+    </marker>
+    <marker index="9" status="1">
+        <corner x="$(arg x)"   y="$(arg x)" z="0" />
+        <corner x="$(arg 3x)"  y="$(arg x)" z="0" />
+        <corner x="$(arg 3x)"  y="$(arg 3x)" z="0" />
+        <corner x="$(arg x)"   y="$(arg 3x)" z="0" />
+    </marker>
+    <marker index="10" status="1">
+        <corner x="-$(arg 3x)" y="-$(arg 3x)" z="0" />
+        <corner x="-$(arg x)"  y="-$(arg 3x)" z="0" />
+        <corner x="-$(arg x)"  y="-$(arg x)" z="0" />
+        <corner x="-$(arg 3x)" y="-$(arg x)" z="0" />
+    </marker>
+    <marker index="11" status="1">
+        <corner x="$(arg x)"   y="-$(arg 3x)" z="0" />
+        <corner x="$(arg 3x)"  y="-$(arg 3x)" z="0" />
+        <corner x="$(arg 3x)"  y="-$(arg x)" z="0" />
+        <corner x="$(arg x)"   y="-$(arg x)" z="0" />
     </marker>
 
     <marker index="12" status="1">
