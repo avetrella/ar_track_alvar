@@ -133,17 +133,17 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
     tf::StampedTransform camToMarker (t, image_msg->header.stamp, image_msg->header.frame_id, markerFrame.c_str());
     tf_broadcaster->sendTransform(camToMarker);
 
-    //tf::Transform tInv = t.inverse();
+    tf::Transform tInv = t.inverse();
     geometry_msgs::PoseStamped camToMarkerpose;
     camToMarkerpose.header = image_msg->header;
-    //camToMarkerpose.header.frame_id = markerFrame.c_str();
-    camToMarkerpose.pose.position.x    = t.getOrigin().x();
-    camToMarkerpose.pose.position.y    = t.getOrigin().y();
-    camToMarkerpose.pose.position.z    = t.getOrigin().z();
-    camToMarkerpose.pose.orientation.w = t.getRotation().w();
-    camToMarkerpose.pose.orientation.x = t.getRotation().x();
-    camToMarkerpose.pose.orientation.y = t.getRotation().y();
-    camToMarkerpose.pose.orientation.z = t.getRotation().z();
+    camToMarkerpose.header.frame_id = markerFrame.c_str();
+    camToMarkerpose.pose.position.x    = tInv.getOrigin().x();
+    camToMarkerpose.pose.position.y    = tInv.getOrigin().y();
+    camToMarkerpose.pose.position.z    = tInv.getOrigin().z();
+    camToMarkerpose.pose.orientation.w = tInv.getRotation().w();
+    camToMarkerpose.pose.orientation.x = tInv.getRotation().x();
+    camToMarkerpose.pose.orientation.y = tInv.getRotation().y();
+    camToMarkerpose.pose.orientation.z = tInv.getRotation().z();
     poseCamMarkersPub_.publish(camToMarkerpose);
 
   }
