@@ -47,6 +47,8 @@
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/image_encodings.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <std_msgs/Bool.h>
+
 
 using namespace alvar;
 using namespace std;
@@ -62,6 +64,8 @@ ros::Publisher arMarkerPub_;
 ros::Publisher rvizMarkerPub_;
 ros::Publisher poseCamMarkersPub_;
 ros::Publisher transfCamMarkersPub_;
+ros::Publisher pub_base_visible_;
+std_msgs::Bool base_visible_;
 ar_track_alvar_msgs::AlvarMarkers arPoseMarkers_;
 tf::TransformListener *tf_listener;
 tf::TransformBroadcaster *tf_broadcaster;
@@ -292,16 +296,17 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
       for(int i=0; i<n_bundles; i++)
     	{
     	  if(bundles_seen[i] == true){
-          //base_visible.data = false;
-          pub_base_visible.publish(base_visible);
+          base_visible_.data = true;
+          pub_base_visible_.publish(base_visible_);
+
     	    makeMarkerMsgs(MAIN_MARKER, master_id[i], bundlePoses[i], image_msg, CamToOutput, &rvizMarker, &ar_pose_marker);
     	    rvizMarkerPub_.publish (rvizMarker);
     	    arPoseMarkers_.markers.push_back (ar_pose_marker);
     	  }
-        /*else{
-          base_visible.data = false;
-          pub_base_visible.publish(base_visible);
-        }*/
+        else{
+          base_visible_.data = false;
+          pub_base_visible_.publish(base_visible_);
+        }
     	}
 
       //Publish the marker messages
@@ -393,7 +398,7 @@ int main(int argc, char *argv[])
   rvizMarkerPub_ = n.advertise < visualization_msgs::Marker > ("visualization_marker", 0);
   poseCamMarkersPub_ = n.advertise < geometry_msgs::PoseStamped > ("camera_pose", 0);
   transfCamMarkersPub_ = n.advertise < geometry_msgs::TransformStamped > ("camera_transf", 0);
-
+  pub_base_visible_ = n.advertise<std_msgs::Bool>("base_visible",0);
 
 	
   //Give tf a chance to catch up before the camera callback starts asking for transforms
