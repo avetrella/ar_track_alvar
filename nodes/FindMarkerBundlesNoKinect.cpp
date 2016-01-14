@@ -61,6 +61,7 @@ image_transport::Subscriber cam_sub_;
 ros::Publisher arMarkerPub_;
 ros::Publisher rvizMarkerPub_;
 ros::Publisher poseCamMarkersPub_;
+ros::Publisher transfCamMarkersPub_;
 ar_track_alvar_msgs::AlvarMarkers arPoseMarkers_;
 tf::TransformListener *tf_listener;
 tf::TransformBroadcaster *tf_broadcaster;
@@ -123,29 +124,43 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
   tf::Transform m (tf::Quaternion::getIdentity (), markerOrigin);
   tf::Transform markerPose = t * m;
 
-  //Publish the cam to marker transform for main marker in each bundle
+  //Publish the marker to camera transform for main marker in each bundle
   if(type==MAIN_MARKER){
     std::string markerFrame = "ar_marker_";
     std::stringstream out;
     out << id;
     std::string id_string = out.str();
     markerFrame += id_string;
-    tf::StampedTransform camToMarker (t, image_msg->header.stamp, image_msg->header.frame_id, markerFrame.c_str());
-    tf_broadcaster->sendTransform(camToMarker);
 
     tf::Transform tInv = t.inverse();
-    geometry_msgs::PoseStamped camToMarkerpose;
-    camToMarkerpose.header = image_msg->header;
-    camToMarkerpose.header.frame_id = markerFrame.c_str();
-    camToMarkerpose.pose.position.x    = tInv.getOrigin().x();
-    camToMarkerpose.pose.position.y    = tInv.getOrigin().y();
-    camToMarkerpose.pose.position.z    = tInv.getOrigin().z();
-    camToMarkerpose.pose.orientation.w = tInv.getRotation().w();
-    camToMarkerpose.pose.orientation.x = tInv.getRotation().x();
-    camToMarkerpose.pose.orientation.y = tInv.getRotation().y();
-    camToMarkerpose.pose.orientation.z = tInv.getRotation().z();
-    poseCamMarkersPub_.publish(camToMarkerpose);
+    geometry_msgs::PoseStamped markerToCameraPose;
+    geometry_msgs::TransformStamped markerToCameraTransf;
 
+    markerToCameraPose.header = image_msg->header;
+    markerToCameraPose.header.frame_id = markerFrame.c_str();
+    markerToCameraPose.pose.position.x    = tInv.getOrigin().x();
+    markerToCameraPose.pose.position.y    = tInv.getOrigin().y();
+    markerToCameraPose.pose.position.z    = tInv.getOrigin().z();
+    markerToCameraPose.pose.orientation.w = tInv.getRotation().w();
+    markerToCameraPose.pose.orientation.x = tInv.getRotation().x();
+    markerToCameraPose.pose.orientation.y = tInv.getRotation().y();
+    markerToCameraPose.pose.orientation.z = tInv.getRotation().z();
+    poseCamMarkersPub_.publish(markerToCameraPose);
+
+    markerToCameraTransf.header = image_msg->header;
+    markerToCameraTransf.header.frame_id = markerFrame.c_str();
+    markerToCameraTransf.child_frame_id = image_msg->header.frame_id;
+    markerToCameraTransf.transform.translation.x = tInv.getOrigin().x();
+    markerToCameraTransf.transform.translation.y = tInv.getOrigin().y();
+    markerToCameraTransf.transform.translation.z = tInv.getOrigin().z();
+    markerToCameraTransf.transform.rotation.w    = tInv.getRotation().w();
+    markerToCameraTransf.transform.rotation.x    = tInv.getRotation().x();
+    markerToCameraTransf.transform.rotation.y    = tInv.getRotation().y();
+    markerToCameraTransf.transform.rotation.z    = tInv.getRotation().z();
+    transfCamMarkersPub_.publish(markerToCameraTransf);
+
+    tf::StampedTransform markerToCamera (tInv, image_msg->header.stamp, markerFrame.c_str(),image_msg->header.frame_id);
+    tf_broadcaster->sendTransform(markerToCamera);
   }
 
   //Create the rviz visualization message
@@ -277,10 +292,16 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
       for(int i=0; i<n_bundles; i++)
     	{
     	  if(bundles_seen[i] == true){
+          //base_visible.data = false;
+          pub_base_visible.publish(base_visible);
     	    makeMarkerMsgs(MAIN_MARKER, master_id[i], bundlePoses[i], image_msg, CamToOutput, &rvizMarker, &ar_pose_marker);
     	    rvizMarkerPub_.publish (rvizMarker);
     	    arPoseMarkers_.markers.push_back (ar_pose_marker);
     	  }
+        /*else{
+          base_visible.data = false;
+          pub_base_visible.publish(base_visible);
+        }*/
     	}
 
       //Publish the marker messages
@@ -371,6 +392,8 @@ int main(int argc, char *argv[])
   arMarkerPub_ = n.advertise < ar_track_alvar_msgs::AlvarMarkers > ("ar_pose_marker", 0);
   rvizMarkerPub_ = n.advertise < visualization_msgs::Marker > ("visualization_marker", 0);
   poseCamMarkersPub_ = n.advertise < geometry_msgs::PoseStamped > ("camera_pose", 0);
+  transfCamMarkersPub_ = n.advertise < geometry_msgs::TransformStamped > ("camera_transf", 0);
+
 
 	
   //Give tf a chance to catch up before the camera callback starts asking for transforms
