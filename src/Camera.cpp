@@ -658,7 +658,7 @@ void Camera::CalcExteriorOrientation(vector<CvPoint3D64f>& pw, vector<CvPoint2D6
 void Camera::CalcExteriorOrientation(vector<CvPoint3D64f>& pw, vector<PointDouble >& pi,
 					CvMat *rodriques, CvMat *tra)
 {
-	//assert(pw.size() == pi.size());
+/*	//assert(pw.size() == pi.size());
 
 	int size = (int)pi.size();
 
@@ -676,18 +676,48 @@ void Camera::CalcExteriorOrientation(vector<CvPoint3D64f>& pw, vector<PointDoubl
 		image_pts[i].y = pi[i].y;
 	}
 
-	double rot[3]; // rotation vector
-	CvMat world_mat, image_mat, rot_vec;
+	//double rot[3]; // rotation vector
+	CvMat world_mat, image_mat;
 	cvInitMatHeader(&world_mat, size, 1, CV_64FC3, world_pts);
 	cvInitMatHeader(&image_mat, size, 1, CV_64FC2, image_pts);
-	cvInitMatHeader(&rot_vec, 3, 1, CV_64FC1, rot);
+	//cvInitMatHeader(&rot_vec, 3, 1, CV_64FC1, rot);
 
 	cvZero(tra);
 	//cvmodFindExtrinsicCameraParams2(&world_mat, &image_mat, &calib_K, &calib_D, rodriques, tra, error);
 	cvFindExtrinsicCameraParams2(&world_mat, &image_mat, &calib_K, &calib_D, rodriques, tra);
-	
+
 	delete[] world_pts;
-	delete[] image_pts;
+	delete[] image_pts;*/
+
+	int size = (int)pi.size();
+
+	vector<cv::Point3f> pwPoint(size);
+	vector<cv::Point2f> piPoint(size);
+
+	for(int i = 0; i < size; i++){
+		pwPoint[i].x = (float)pw[i].x;
+		pwPoint[i].y = (float)pw[i].y;
+		pwPoint[i].z = (float)pw[i].z;
+		piPoint[i].x = (float)pi[i].x;
+		piPoint[i].y = (float)pi[i].y;
+	}
+	
+	cv::Mat rotat;
+	cv::Mat tran;
+	cv::Mat camArray(3, 3, CV_32FC1);
+	cv::Mat distCoef(4, 1, CV_32FC1);
+
+	for(int i = 0; i < 4; ++i)
+		distCoef.at<float>(i) = (float)calib_D_data[i];
+	
+	for(int i = 0; i < 3; ++i)
+		for(int j = 0; j < 3; ++j)
+			camArray.at<float>(i,j) = (float)calib_K_data[i][j];
+	
+	//cv::solvePnP(pwPoint,piPoint,camArray, distCoef, rotat, tran);
+	cv::solvePnPRansac(pwPoint,piPoint,camArray, distCoef, rotat, tran,false, 100, 15.0, (int)(size*0.8),cv::noArray(),CV_ITERATIVE);
+	*rodriques = rotat;
+	*tra = tran;
 }
 
 void Camera::CalcExteriorOrientation(vector<PointDouble >& pw, vector<PointDouble >& pi,

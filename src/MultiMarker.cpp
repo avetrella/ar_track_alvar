@@ -322,11 +322,8 @@ double MultiMarker::_GetPose(MarkerIterator &begin, MarkerIterator &end, Camera*
 			continue;
 
 		//discart transformation from little tags when i see the bigger one
-	/*	if (max_index > 8)
+	/*	if (max_index > 9)
 			if(index < 5)
-				continue;
-		if (max_index > 8 )
-			if(index < 9)
 				continue;*/
 
 		// But only if we have corresponding points in the pointcloud
