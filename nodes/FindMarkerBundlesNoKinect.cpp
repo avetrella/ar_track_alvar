@@ -347,9 +347,9 @@ int main(int argc, char *argv[])
 
   //TODO this is only for my base!!! should be dynamic
   marker_detector.SetMarkerSize(marker_size);
-  marker_detector.SetMarkerSizeForId(0,marker_size);
+  //marker_detector.SetMarkerSizeForId(0,marker_size);
 
-  marker_detector.SetMarkerSizeForId(1,marker_size);
+ /* marker_detector.SetMarkerSizeForId(1,marker_size);
   marker_detector.SetMarkerSizeForId(2,marker_size);
   marker_detector.SetMarkerSizeForId(3,marker_size);
   marker_detector.SetMarkerSizeForId(4,marker_size);
@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
   marker_detector.SetMarkerSizeForId(12,6*marker_size);
 
   marker_detector.SetMarkerSizeForId(13,9*marker_size);
-  marker_detector.SetMarkerSizeForId(14,9*marker_size);
+  marker_detector.SetMarkerSizeForId(14,9*marker_size);*/
 
   multi_marker_bundles = new MultiMarkerBundle*[n_bundles];	
   bundlePoses = new Pose[n_bundles];
