@@ -302,7 +302,7 @@ double MultiMarker::_GetPose(MarkerIterator &begin, MarkerIterator &end, Camera*
 		if (marker_status[i] > 0) marker_status[i]=1;
 	}
 
-	/*int max_index = 0;
+/*	int max_index = 0;
 	for (MarkerIterator &i = begin.reset(); i != end; ++i)
 	{
 		const Marker* marker = *i;
@@ -321,9 +321,12 @@ double MultiMarker::_GetPose(MarkerIterator &begin, MarkerIterator &end, Camera*
 		if (index < 0) 
 			continue;
 
-		//discart transformation from little tags when i see the bigger one
-	/*	if (max_index > 9)
+		/*//discart transformation from little tags when i see the bigger one
+		if (max_index > 9)
 			if(index < 5)
+				continue;
+		if (max_index > 13)
+			if(index < 9)
 				continue;*/
 
 		// But only if we have corresponding points in the pointcloud

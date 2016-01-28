@@ -715,7 +715,7 @@ void Camera::CalcExteriorOrientation(vector<CvPoint3D64f>& pw, vector<PointDoubl
 			camArray.at<float>(i,j) = (float)calib_K_data[i][j];
 	
 	//cv::solvePnP(pwPoint,piPoint,camArray, distCoef, rotat, tran);
-	cv::solvePnPRansac(pwPoint,piPoint,camArray, distCoef, rotat, tran,false, 100, 15.0, (int)(size*0.8),cv::noArray(),CV_ITERATIVE);
+	cv::solvePnPRansac(pwPoint,piPoint,camArray, distCoef, rotat, tran,false, 100, 15.0, (int)(size*0.5),cv::noArray(),CV_ITERATIVE);
 	*rodriques = rotat;
 	*tra = tran;
 }
