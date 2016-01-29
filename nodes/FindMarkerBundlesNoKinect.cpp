@@ -65,6 +65,8 @@ ros::Publisher rvizMarkerPub_;
 ros::Publisher poseCamMarkersPub_;
 ros::Publisher transfCamMarkersPub_;
 ros::Publisher pub_base_visible_;
+geometry_msgs::PoseStamped markerToCameraPose;
+geometry_msgs::TransformStamped markerToCameraTransf;
 std_msgs::Bool base_visible_;
 ar_track_alvar_msgs::AlvarMarkers arPoseMarkers_;
 tf::TransformListener *tf_listener;
@@ -137,8 +139,6 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
     markerFrame += id_string;
 
     tf::Transform tInv = t.inverse();
-    geometry_msgs::PoseStamped markerToCameraPose;
-    geometry_msgs::TransformStamped markerToCameraTransf;
 
     markerToCameraPose.header = image_msg->header;
     markerToCameraPose.header.frame_id = markerFrame.c_str();
@@ -306,6 +306,9 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
         else{
           base_visible_.data = false;
           pub_base_visible_.publish(base_visible_);
+          transfCamMarkersPub_.publish(markerToCameraTransf);
+          poseCamMarkersPub_.publish(markerToCameraPose);
+
         }
     	}
 
