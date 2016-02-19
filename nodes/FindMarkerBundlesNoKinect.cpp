@@ -140,31 +140,39 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
 
     tf::Transform tInv = t.inverse();
 
-    markerToCameraPose.header = image_msg->header;
-    markerToCameraPose.header.frame_id = markerFrame.c_str();
-    markerToCameraPose.pose.position.x    = tInv.getOrigin().x();
-    markerToCameraPose.pose.position.y    = tInv.getOrigin().y();
-    markerToCameraPose.pose.position.z    = tInv.getOrigin().z();
-    markerToCameraPose.pose.orientation.w = tInv.getRotation().w();
-    markerToCameraPose.pose.orientation.x = tInv.getRotation().x();
-    markerToCameraPose.pose.orientation.y = tInv.getRotation().y();
-    markerToCameraPose.pose.orientation.z = tInv.getRotation().z();
-    poseCamMarkersPub_.publish(markerToCameraPose);
+    if(tInv.getOrigin().z() <= 0 || (tInv.getRotation().x()*tInv.getRotation().x() + tInv.getOrigin().y()*tInv.getOrigin().y()) < 0.2){
+      markerToCameraTransf.header.stamp = ros::Time::now();
+      transfCamMarkersPub_.publish(markerToCameraTransf);
+      markerToCameraPose.header.stamp = ros::Time::now();
+      poseCamMarkersPub_.publish(markerToCameraPose);
+    }else{
 
-    markerToCameraTransf.header = image_msg->header;
-    markerToCameraTransf.header.frame_id = markerFrame.c_str();
-    markerToCameraTransf.child_frame_id = image_msg->header.frame_id;
-    markerToCameraTransf.transform.translation.x = tInv.getOrigin().x();
-    markerToCameraTransf.transform.translation.y = tInv.getOrigin().y();
-    markerToCameraTransf.transform.translation.z = tInv.getOrigin().z();
-    markerToCameraTransf.transform.rotation.w    = tInv.getRotation().w();
-    markerToCameraTransf.transform.rotation.x    = tInv.getRotation().x();
-    markerToCameraTransf.transform.rotation.y    = tInv.getRotation().y();
-    markerToCameraTransf.transform.rotation.z    = tInv.getRotation().z();
-    transfCamMarkersPub_.publish(markerToCameraTransf);
+      markerToCameraPose.header = image_msg->header;
+      markerToCameraPose.header.frame_id = markerFrame.c_str();
+      markerToCameraPose.pose.position.x    = tInv.getOrigin().x();
+      markerToCameraPose.pose.position.y    = tInv.getOrigin().y();
+      markerToCameraPose.pose.position.z    = tInv.getOrigin().z();
+      markerToCameraPose.pose.orientation.w = tInv.getRotation().w();
+      markerToCameraPose.pose.orientation.x = tInv.getRotation().x();
+      markerToCameraPose.pose.orientation.y = tInv.getRotation().y();
+      markerToCameraPose.pose.orientation.z = tInv.getRotation().z();
+      poseCamMarkersPub_.publish(markerToCameraPose);
 
-    tf::StampedTransform markerToCamera (tInv, image_msg->header.stamp, markerFrame.c_str(),image_msg->header.frame_id);
-    tf_broadcaster->sendTransform(markerToCamera);
+      markerToCameraTransf.header = image_msg->header;
+      markerToCameraTransf.header.frame_id = markerFrame.c_str();
+      markerToCameraTransf.child_frame_id = image_msg->header.frame_id;
+      markerToCameraTransf.transform.translation.x = tInv.getOrigin().x();
+      markerToCameraTransf.transform.translation.y = tInv.getOrigin().y();
+      markerToCameraTransf.transform.translation.z = tInv.getOrigin().z();
+      markerToCameraTransf.transform.rotation.w    = tInv.getRotation().w();
+      markerToCameraTransf.transform.rotation.x    = tInv.getRotation().x();
+      markerToCameraTransf.transform.rotation.y    = tInv.getRotation().y();
+      markerToCameraTransf.transform.rotation.z    = tInv.getRotation().z();
+      transfCamMarkersPub_.publish(markerToCameraTransf);
+
+      tf::StampedTransform markerToCamera (tInv, image_msg->header.stamp, markerFrame.c_str(),image_msg->header.frame_id);
+      tf_broadcaster->sendTransform(markerToCamera);
+    }
   }
 
   //Create the rviz visualization message
@@ -306,7 +314,9 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
         else{
           base_visible_.data = false;
           pub_base_visible_.publish(base_visible_);
+          markerToCameraTransf.header.stamp = ros::Time::now();
           transfCamMarkersPub_.publish(markerToCameraTransf);
+          markerToCameraPose.header.stamp = ros::Time::now();
           poseCamMarkersPub_.publish(markerToCameraPose);
 
         }
