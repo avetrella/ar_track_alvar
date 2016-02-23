@@ -314,10 +314,12 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
         else{
           base_visible_.data = false;
           pub_base_visible_.publish(base_visible_);
-          markerToCameraTransf.header.stamp = ros::Time::now();
-          transfCamMarkersPub_.publish(markerToCameraTransf);
-          markerToCameraPose.header.stamp = ros::Time::now();
-          poseCamMarkersPub_.publish(markerToCameraPose);
+	  if(markerToCameraPose.pose.position.z < 0.1){
+          	markerToCameraTransf.header.stamp = ros::Time::now();
+          	transfCamMarkersPub_.publish(markerToCameraTransf);
+          	markerToCameraPose.header.stamp = ros::Time::now();
+          	poseCamMarkersPub_.publish(markerToCameraPose);
+	  }
 
         }
     	}
