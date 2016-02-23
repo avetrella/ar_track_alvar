@@ -66,6 +66,8 @@ ros::Publisher poseCamMarkersPub_;
 ros::Publisher transfCamMarkersPub_;
 ros::Publisher pub_base_visible_;
 geometry_msgs::PoseStamped markerToCameraPose;
+geometry_msgs::PoseStamped markerToCameraPoseInitial;
+bool initialPoseSet = false;
 geometry_msgs::TransformStamped markerToCameraTransf;
 std_msgs::Bool base_visible_;
 ar_track_alvar_msgs::AlvarMarkers arPoseMarkers_;
@@ -310,16 +312,20 @@ void getCapCallback (const sensor_msgs::ImageConstPtr & image_msg)
     	    makeMarkerMsgs(MAIN_MARKER, master_id[i], bundlePoses[i], image_msg, CamToOutput, &rvizMarker, &ar_pose_marker);
     	    rvizMarkerPub_.publish (rvizMarker);
     	    arPoseMarkers_.markers.push_back (ar_pose_marker);
+          if(!initialPoseSet){
+            markerToCameraPoseInitial = markerToCameraPose;
+            initialPoseSet = true;
+          }
     	  }
         else{
           base_visible_.data = false;
           pub_base_visible_.publish(base_visible_);
-	  if(markerToCameraPose.pose.position.z < 0.1){
+	      if(initialPoseSet && markerToCameraPose.pose.position.z < 2*markerToCameraPoseInitial.pose.position.z){
           	markerToCameraTransf.header.stamp = ros::Time::now();
           	transfCamMarkersPub_.publish(markerToCameraTransf);
           	markerToCameraPose.header.stamp = ros::Time::now();
           	poseCamMarkersPub_.publish(markerToCameraPose);
-	  }
+	      }
 
         }
     	}
