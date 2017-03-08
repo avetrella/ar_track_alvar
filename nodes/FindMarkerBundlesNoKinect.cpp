@@ -149,31 +149,33 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
       poseCamMarkersPub_.publish(markerToCameraPose);
     }else{
 
-      markerToCameraPose.header = image_msg->header;
-      markerToCameraPose.header.frame_id = markerFrame.c_str();
-      markerToCameraPose.pose.position.x    = tInv.getOrigin().x();
-      markerToCameraPose.pose.position.y    = tInv.getOrigin().y();
-      markerToCameraPose.pose.position.z    = tInv.getOrigin().z();
-      markerToCameraPose.pose.orientation.w = tInv.getRotation().w();
-      markerToCameraPose.pose.orientation.x = tInv.getRotation().x();
-      markerToCameraPose.pose.orientation.y = tInv.getRotation().y();
-      markerToCameraPose.pose.orientation.z = tInv.getRotation().z();
-      poseCamMarkersPub_.publish(markerToCameraPose);
+      //markerToCameraPose is actually camera wrt. marker (Change definition)
+      markerToCameraPose.header =image_msg->header;  markerFrame.c_str();
+               markerToCameraPose.header.frame_id =image_msg->header.frame_id;
+               markerToCameraPose.pose.position.x    = t.getOrigin().x();
+               markerToCameraPose.pose.position.y    = t.getOrigin().y();
+               markerToCameraPose.pose.position.z    = t.getOrigin().z();
+               markerToCameraPose.pose.orientation.w = t.getRotation().w();
+               markerToCameraPose.pose.orientation.x = t.getRotation().x();
+               markerToCameraPose.pose.orientation.y = t.getRotation().y();
+               markerToCameraPose.pose.orientation.z = t.getRotation().z();
+               poseCamMarkersPub_.publish(markerToCameraPose);
 
-      markerToCameraTransf.header = image_msg->header;
-      markerToCameraTransf.header.frame_id = markerFrame.c_str();
-      markerToCameraTransf.child_frame_id = image_msg->header.frame_id;
-      markerToCameraTransf.transform.translation.x = tInv.getOrigin().x();
-      markerToCameraTransf.transform.translation.y = tInv.getOrigin().y();
-      markerToCameraTransf.transform.translation.z = tInv.getOrigin().z();
-      markerToCameraTransf.transform.rotation.w    = tInv.getRotation().w();
-      markerToCameraTransf.transform.rotation.x    = tInv.getRotation().x();
-      markerToCameraTransf.transform.rotation.y    = tInv.getRotation().y();
-      markerToCameraTransf.transform.rotation.z    = tInv.getRotation().z();
-      transfCamMarkersPub_.publish(markerToCameraTransf);
 
-      tf::StampedTransform markerToCamera (tInv, image_msg->header.stamp, markerFrame.c_str(),image_msg->header.frame_id);
-      tf_broadcaster->sendTransform(markerToCamera);
+               markerToCameraTransf.header =image_msg->header;
+               markerToCameraTransf.header.frame_id = image_msg->header.frame_id;
+               markerToCameraTransf.child_frame_id = markerFrame.c_str();
+               markerToCameraTransf.transform.translation.x = t.getOrigin().x();
+               markerToCameraTransf.transform.translation.y = t.getOrigin().y();
+               markerToCameraTransf.transform.translation.z = t.getOrigin().z();
+               markerToCameraTransf.transform.rotation.w    = t.getRotation().w();
+               markerToCameraTransf.transform.rotation.x    = t.getRotation().x();
+               markerToCameraTransf.transform.rotation.y    = t.getRotation().y();
+               markerToCameraTransf.transform.rotation.z    = t.getRotation().z();
+               transfCamMarkersPub_.publish(markerToCameraTransf);
+
+               tf::StampedTransform markerToCamera (t, image_msg->header.stamp,image_msg->header.frame_id, markerFrame.c_str());
+               tf_broadcaster->sendTransform(markerToCamera);
     }
   }
 
