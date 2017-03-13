@@ -126,7 +126,7 @@ void makeMarkerMsgs(int type, int id, Pose &p, sensor_msgs::ImageConstPtr image_
   //Get the marker pose in the camera frame
   tf::Quaternion rotation (qx,qy,qz,qw);
   tf::Vector3 origin (px,py,pz);
-  tf::Transform t (rotation, origin);  //transform from cam to marker
+  tf::Transform t (rotation, origin);  //transform from camera to marker
 
   tf::Vector3 markerOrigin (0, 0, 0);
   tf::Transform m (tf::Quaternion::getIdentity (), markerOrigin);
@@ -365,30 +365,30 @@ int main(int argc, char *argv[])
   output_frame = argv[6];
   int n_args_before_list = 7;
   n_bundles = argc - n_args_before_list;
+  /*
+ marker_detector.SetMarkerSize(marker_size);
 
-  marker_detector.SetMarkerSize(marker_size);
+ //TODO this is only for my base!!! should be dynamic
+ marker_detector.SetMarkerSize(marker_size);*/
+  marker_detector.SetMarkerSizeForId(17,marker_size);
 
-  //TODO this is only for my base!!! should be dynamic
-  marker_detector.SetMarkerSize(marker_size);
-  //marker_detector.SetMarkerSizeForId(0,marker_size);
-
- /* marker_detector.SetMarkerSizeForId(1,marker_size);
-  marker_detector.SetMarkerSizeForId(2,marker_size);
-  marker_detector.SetMarkerSizeForId(3,marker_size);
+  marker_detector.SetMarkerSizeForId(6,marker_size);
+  marker_detector.SetMarkerSizeForId(5,marker_size);
   marker_detector.SetMarkerSizeForId(4,marker_size);
+  marker_detector.SetMarkerSizeForId(3,marker_size);
 
-  marker_detector.SetMarkerSizeForId(5,2*marker_size);
-  marker_detector.SetMarkerSizeForId(6,2*marker_size);
-  marker_detector.SetMarkerSizeForId(7,2*marker_size);
   marker_detector.SetMarkerSizeForId(8,2*marker_size);
+  marker_detector.SetMarkerSizeForId(9,2*marker_size);
+  marker_detector.SetMarkerSizeForId(10,2*marker_size);
+  marker_detector.SetMarkerSizeForId(11,2*marker_size);
 
-  marker_detector.SetMarkerSizeForId(9,6*marker_size);
-  marker_detector.SetMarkerSizeForId(10,6*marker_size);
-  marker_detector.SetMarkerSizeForId(11,6*marker_size);
   marker_detector.SetMarkerSizeForId(12,6*marker_size);
+  marker_detector.SetMarkerSizeForId(13,6*marker_size);
+  marker_detector.SetMarkerSizeForId(14,6*marker_size);
+  marker_detector.SetMarkerSizeForId(15,6*marker_size);
 
-  marker_detector.SetMarkerSizeForId(13,9*marker_size);
-  marker_detector.SetMarkerSizeForId(14,9*marker_size);*/
+  marker_detector.SetMarkerSizeForId(16,9*marker_size);
+  marker_detector.SetMarkerSizeForId(7,9*marker_size);
 
   multi_marker_bundles = new MultiMarkerBundle*[n_bundles];
   bundlePoses = new Pose[n_bundles];
